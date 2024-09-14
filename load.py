@@ -3,6 +3,7 @@ from subprocess import run as srun
 from dotenv import load_dotenv
 from logging import basicConfig, FileHandler, StreamHandler, INFO, error as log_error, info as log_info
 from requests import get as rget
+from playwright.sync_api import sync_playwright  # Import Playwright
 
 if ospath.exists('log.txt'):
     with open('log.txt', 'w+') as f:
@@ -67,11 +68,12 @@ if UPSTREAM_REPO is not None:
 
 try:
     log_info("Running browser test")
-    browser = Playwright()
-    browser.chromium.launch().close()
+    # Use sync_playwright for launching the browser
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        browser.close()
     log_info("Browser already installed")
 except:
     log_info("Downloading browsers")
-    srun(["playwright","install"])
+    srun(["playwright", "install"])
     log_info("Browsers installed")
- 
